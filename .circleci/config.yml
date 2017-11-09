@@ -1,0 +1,61 @@
+defaults: &defaults
+  working_directory: ~/src
+  docker:
+    - image: circleci/node:8.9.1
+
+version: 2
+jobs:
+  test:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: echo 'export PATH=$HOME/src/node_modules/.bin:$PATH' >> $BASH_ENV
+      - run: yarn
+      - run: yarn test
+      - store_artifacts:
+          path: test-results.xml
+          prefix: tests
+      - store_artifacts:
+          path: coverage
+          prefix: coverage
+      - store_test_results:
+          path: test-results.xml
+
+  deploy-branch:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: yarn add global now
+      - setup_remote_docker
+      - run: echo 'export PATH=$HOME/src/node_modules/.bin:$PATH' >> $BASH_ENV
+      - run: docker run -v $HOME/src:/src/output stephengfriend/the-sim
+      - run: URL=$(now --public -t $NOW_TOKEN)
+      - run: now -t $NOW_TOKEN alias set $URL $CIRCLE_BRANCH-the-sim-api
+  deploy-master:
+    <<: *defaults
+    steps:
+      - checkout
+      - run: yarn add global now
+      - setup_remote_docker
+      - run: echo 'export PATH=$HOME/src/node_modules/.bin:$PATH' >> $BASH_ENV
+      - run: docker run -v $HOME/src:/src/output stephengfriend/the-sim
+      - run: now --public -t $NOW_TOKEN
+      - run: now -t $NOW_TOKEN alias the-sim-api
+
+workflows:
+  version: 2
+  test-deploy:
+    jobs:
+      - test
+      - deploy-branch:
+          requires:
+            - test
+          filters:
+            branches:
+              only: /^(?!master$).*$/
+      - deploy-master:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master

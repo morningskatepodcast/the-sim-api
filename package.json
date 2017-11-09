@@ -6,11 +6,12 @@
   "author": "Stephen G. Friend <stephen.g.friend@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "clean": "rimraf .nyc_output coverage test-results.xml",
     "lint": "xo",
     "now-start": "micro",
     "start": "micro-dev",
-    "pretest": "yarn lint",
-    "test": "ava"
+    "pretest": "yarn clean",
+    "test": "nyc ava --tap | tap-xunit > test-results.xml"
   },
   "now": {
     "alias": "the-sim-api",
@@ -20,15 +21,20 @@
   },
   "dependencies": {
     "date-fns": "^1.29.0",
+    "global": "^4.3.2",
     "micro": "^9.0.1",
     "micro-compress": "^1.0.0",
     "micro-cors": "^0.0.4",
-    "micro-get": "^0.1.1"
+    "micro-get": "^0.1.1",
+    "now": "^8.4.0"
   },
   "devDependencies": {
     "ava": "^0.23.0",
     "micro-dev": "^1.4.0",
+    "nyc": "^11.3.0",
     "request-promise": "^4.2.2",
+    "rimraf": "^2.6.2",
+    "tap-xunit": "^1.7.0",
     "test-listen": "^1.0.2",
     "xo": "^0.18.2"
   },
@@ -40,5 +46,18 @@
         "always"
       ]
     }
+  },
+  "nyc": {
+    "check-coverage": true,
+    "per-file": true,
+    "lines": 80,
+    "statements": 80,
+    "functions": 80,
+    "branches": 90,
+    "reporter": [
+      "lcov",
+      "text",
+      "text-summary"
+    ]
   }
 }
