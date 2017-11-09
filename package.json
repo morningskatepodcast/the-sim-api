@@ -1,0 +1,44 @@
+{
+  "name": "the-sim-api",
+  "version": "0.1.0",
+  "description": "A Micro api for serving The Sim data",
+  "main": "index.js",
+  "author": "Stephen G. Friend <stephen.g.friend@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "lint": "xo",
+    "now-start": "micro",
+    "start": "micro-dev",
+    "pretest": "yarn lint",
+    "test": "ava"
+  },
+  "now": {
+    "alias": "the-sim-api",
+    "env": {
+      "NODE_ENV": "production"
+    }
+  },
+  "dependencies": {
+    "date-fns": "^1.29.0",
+    "micro": "^9.0.1",
+    "micro-compress": "^1.0.0",
+    "micro-cors": "^0.0.4",
+    "micro-get": "^0.1.1"
+  },
+  "devDependencies": {
+    "ava": "^0.23.0",
+    "micro-dev": "^1.4.0",
+    "request-promise": "^4.2.2",
+    "test-listen": "^1.0.2",
+    "xo": "^0.18.2"
+  },
+  "xo": {
+    "space": 2,
+    "rules": {
+      "object-curly-spacing": [
+        "error",
+        "always"
+      ]
+    }
+  }
+}
