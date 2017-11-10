@@ -34,6 +34,7 @@ jobs:
           docker cp the-sim:/src/output/latest.json "$HOME"/src/latest.json
       - run: URL=$(now --public -t $NOW_TOKEN)
       - run: now -t $NOW_TOKEN alias set $URL $CIRCLE_BRANCH-the-sim-api
+      - run: now -t $NOW_TOKEN rm --safe -y $CIRCLE_BRANCH-the-sim-api
   deploy-master:
     <<: *defaults
     steps:
@@ -47,21 +48,33 @@ jobs:
           docker cp the-sim:/src/output/latest.json "$HOME"/src/latest.json
       - run: now --public -t $NOW_TOKEN
       - run: now -t $NOW_TOKEN alias the-sim-api
+      - run: now -t $NOW_TOKEN rm --safe -y the-sim-api
 
 workflows:
   version: 2
-  test-deploy:
+  commit:
+    test-deploy:
+      jobs:
+        - test
+        - deploy-branch:
+            requires:
+              - test
+            filters:
+              branches:
+                only: /^(?!master$).*$/
+        - deploy-master:
+            requires:
+              - test
+            filters:
+              branches:
+                only: master
+  nightly:
+    triggers:
+      - schedule:
+          cron: "0 4,10,16,22 * * *" # UTC
+          filters:
+            branches:
+              only:
+                - master
     jobs:
-      - test
-      - deploy-branch:
-          requires:
-            - test
-          filters:
-            branches:
-              only: /^(?!master$).*$/
-      - deploy-master:
-          requires:
-            - test
-          filters:
-            branches:
-              only: master
+      - deploy-master
