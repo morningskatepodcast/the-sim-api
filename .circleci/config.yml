@@ -53,21 +53,20 @@ jobs:
 workflows:
   version: 2
   commit:
-    test-deploy:
-      jobs:
-        - test
-        - deploy-branch:
-            requires:
-              - test
-            filters:
-              branches:
-                only: /^(?!master$).*$/
-        - deploy-master:
-            requires:
-              - test
-            filters:
-              branches:
-                only: master
+    jobs:
+      - test
+      - deploy-branch:
+          requires:
+            - test
+          filters:
+            branches:
+              only: /^(?!master$).*$/
+      - deploy-master:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
   nightly:
     triggers:
       - schedule:
