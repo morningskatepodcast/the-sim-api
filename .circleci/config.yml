@@ -28,7 +28,10 @@ jobs:
       - run: yarn add global now
       - setup_remote_docker
       - run: echo 'export PATH=$HOME/src/node_modules/.bin:$PATH' >> $BASH_ENV
-      - run: docker run -v $HOME/src:/src/output stephengfriend/the-sim
+      - run: |
+          docker run --name the-sim stephengfriend/the-sim
+      - run: |
+          docker cp the-sim:/src/output/latest.json "$HOME"/src/latest.json
       - run: URL=$(now --public -t $NOW_TOKEN)
       - run: now -t $NOW_TOKEN alias set $URL $CIRCLE_BRANCH-the-sim-api
   deploy-master:
@@ -38,7 +41,10 @@ jobs:
       - run: yarn add global now
       - setup_remote_docker
       - run: echo 'export PATH=$HOME/src/node_modules/.bin:$PATH' >> $BASH_ENV
-      - run: docker run -v $HOME/src:/src/output stephengfriend/the-sim
+      - run: |
+          docker run --name the-sim stephengfriend/the-sim
+      - run: |
+          docker cp the-sim:/src/output/latest.json "$HOME"/src/latest.json
       - run: now --public -t $NOW_TOKEN
       - run: now -t $NOW_TOKEN alias the-sim-api
 
