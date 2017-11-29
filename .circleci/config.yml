@@ -32,9 +32,11 @@ jobs:
           docker run --name the-sim stephengfriend/the-sim
       - run: |
           docker cp the-sim:/src/output/latest.json "$HOME"/src/latest.json
-      - run: URL=$(now --public -t $NOW_TOKEN)
-      - run: now -t $NOW_TOKEN alias set $URL $CIRCLE_BRANCH-the-sim-api
-      - run: now -t $NOW_TOKEN rm --safe -y $CIRCLE_BRANCH-the-sim-api
+      - run: |
+          URL=$(now --public -t $NOW_TOKEN --team morningskatepod --force)
+          echo "export URL=$URL" >> $BASH_ENV
+      - run: now -t $NOW_TOKEN --team morningskatepod alias set $URL $CIRCLE_BRANCH-the-sim-api
+      - run: now -t $NOW_TOKEN --team morningskatepod rm --safe -y the-sim-api
   deploy-master:
     <<: *defaults
     steps:
@@ -46,9 +48,9 @@ jobs:
           docker run --name the-sim stephengfriend/the-sim
       - run: |
           docker cp the-sim:/src/output/latest.json "$HOME"/src/latest.json
-      - run: now --public -t $NOW_TOKEN
-      - run: now -t $NOW_TOKEN alias the-sim-api
-      - run: now -t $NOW_TOKEN rm --safe -y the-sim-api
+      - run: now --public -t $NOW_TOKEN --team morningskatepod --force
+      - run: now -t $NOW_TOKEN --team morningskatepod alias the-sim-api
+      - run: now -t $NOW_TOKEN --team morningskatepod rm --safe -y the-sim-api
 
 workflows:
   version: 2
@@ -70,7 +72,7 @@ workflows:
   nightly:
     triggers:
       - schedule:
-          cron: "0 4,10,16,22 * * *" # UTC
+          cron: "0 4,16,22 * * *" # UTC
           filters:
             branches:
               only:
