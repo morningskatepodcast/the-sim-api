@@ -35,8 +35,8 @@ jobs:
       - run: |
           URL=$(now --public -t $NOW_TOKEN --team morningskatepod --force)
           echo "export URL=$URL" >> $BASH_ENV
-      - run: now -t $NOW_TOKEN --team morningskatepod alias set $URL $CIRCLE_BRANCH-the-sim-api
-      - run: now -t $NOW_TOKEN --team morningskatepod rm --safe -y the-sim-api
+      - run: now alias -t $NOW_TOKEN --team morningskatepod set $URL $CIRCLE_BRANCH-the-sim-api
+      - run: now rm -t $NOW_TOKEN --team morningskatepod --safe -y the-sim-api
   deploy-master:
     <<: *defaults
     steps:
@@ -49,8 +49,8 @@ jobs:
       - run: |
           docker cp the-sim:/src/output/latest.json "$HOME"/src/latest.json
       - run: now --public -t $NOW_TOKEN --team morningskatepod --force
-      - run: now -t $NOW_TOKEN --team morningskatepod alias the-sim-api
-      - run: now -t $NOW_TOKEN --team morningskatepod rm --safe -y the-sim-api
+      - run: now alias -t $NOW_TOKEN --team morningskatepod the-sim-api
+      - run: now rm -t $NOW_TOKEN --team morningskatepod --safe -y the-sim-api
 
 workflows:
   version: 2
